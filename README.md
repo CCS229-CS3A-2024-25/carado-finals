@@ -11,9 +11,8 @@ pinned: false
 short_description: Bone Break classification model with Streamlit
 ---
 
-# Welcome to Streamlit!
+# CCS 229 - Intelligent Systems
 
-Edit `/src/streamlit_app.py` to customize this app to your heart's desire. :heart:
+My final project repository for this course. You can access the video and software documentation link [here](https://drive.google.com/drive/folders/1L1bOPxrM7gwhuSRe0oAxmvOXonEjoEYW?usp=sharing).
 
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+Run `/src/streamlit_app.py` to see the application.
