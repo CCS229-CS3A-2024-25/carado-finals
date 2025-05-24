@@ -1,40 +1,39 @@
-import altair as alt
-import numpy as np
-import pandas as pd
 import streamlit as st
+import torch
+from PIL import Image
+from modelOps import load_model, preprocess_image, predict_class
 
-"""
-# Welcome to Streamlit!
+def main():
+    st.set_page_config(page_title="Breaking Bone", page_icon="🦴")
+    st.title("🦴 Breaking Bone")
+    st.write("An X-Ray Broken Bone Classifier")
+    st.caption("Prepared by: John Manuel Carado")
+    st.write("Upload an X-ray image to classify potential fractures.")
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:.
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = load_model(device)
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+    uploaded_file = st.file_uploader("Upload an X-ray image", type=["jpg", "jpeg", "png"])
 
-num_points = st.slider("Number of points in spiral", 1, 10000, 1100)
-num_turns = st.slider("Number of turns in spiral", 1, 300, 31)
+    if uploaded_file:
+        image = Image.open(uploaded_file).convert("RGB")
 
-indices = np.linspace(0, 1, num_points)
-theta = 2 * np.pi * num_turns * indices
-radius = indices
+        col1, col2 = st.columns(2)
 
-x = radius * np.cos(theta)
-y = radius * np.sin(theta)
+        with col1:
+            st.image(image, caption="Uploaded Image")
 
-df = pd.DataFrame({
-    "x": x,
-    "y": y,
-    "idx": indices,
-    "rand": np.random.randn(num_points),
-})
+        with col2:
+            st.subheader("Classification Results")
+            with st.spinner("Classifying..."):
+                try:
+                    input_tensor = preprocess_image(image).to(device)
+                    pred, conf = predict_class(input_tensor, model)
+                    st.success(f"Predicted Class: **{pred}**")
+                    st.info(f"Confidence: **{conf:.2%}**")
+                except Exception as e:
+                    st.error(f"An error occurred during classification: {e}")
+                    st.write("Please ensure the uploaded image is valid and the model is loaded correctly.")
 
-st.altair_chart(alt.Chart(df, height=700, width=700)
-    .mark_point(filled=True)
-    .encode(
-        x=alt.X("x", axis=None),
-        y=alt.Y("y", axis=None),
-        color=alt.Color("idx", legend=None, scale=alt.Scale()),
-        size=alt.Size("rand", legend=None, scale=alt.Scale(range=[1, 150])),
-    ))
+if __name__ == "__main__":
+    main()
