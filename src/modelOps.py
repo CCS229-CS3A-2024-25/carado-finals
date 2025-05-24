@@ -4,11 +4,12 @@ import torch
 from torch import nn
 from PIL import Image
 from pathlib import Path
+from torchvision.models import MobileNet_V2_Weights
 
 # 1. Load Model
 @st.cache_resource
-def load_model(MODEL_PATH: Path = "src/outputs/p2_e29_best_model.pth", device: str = "cpu"):
-    model = models.mobilenet_v2(pretrained=True)
+def load_model(MODEL_PATH: Path = Path("src/outputs/p2_e29_best_model.pth"), device: str = "cpu"):
+    model = models.mobilenet_v2(weights=MobileNet_V2_Weights.DEFAULT)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, 10)
     
     state_dict = torch.load(MODEL_PATH, map_location=device)

@@ -11,7 +11,7 @@ def main():
     st.write("Upload an X-ray image to classify potential fractures.")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = load_model(device)
+    model = load_model(device=device)
 
     uploaded_file = st.file_uploader("Upload an X-ray image", type=["jpg", "jpeg", "png"])
 
